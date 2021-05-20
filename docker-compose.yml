@@ -32,12 +32,10 @@ services:
       - "$SERVICE_TESTS_PORT:3002"
 
   database:
+    <<: *common
     image: mongo
     container_name: database
     restart: unless-stopped
-    env_file: .env
-    networks:
-      - advanced-testing-network
     ports:
       - "$DATABASE_PORT:27017"
     volumes:
