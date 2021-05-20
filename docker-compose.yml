@@ -1,0 +1,47 @@
+version: '3.7'
+
+x-common:
+  &common
+  image: node:14.14.0-alpine
+  env_file: .env
+  networks:
+    - advanced-testing-network
+
+x-frontend-volumes:
+  &frontend-volumes
+  volumes:
+    # frontend sources
+    - ./:/frontend:delegated
+
+services:
+
+  client:
+    <<: *common
+    container_name: client
+    command: /bin/sh -c "cd /frontend && node_modules/.bin/webpack --color --watch"
+    volumes:
+      # sources
+      - ./:/frontend
+
+  service-tests:
+    <<: *common
+    <<: *frontend-volumes
+    container_name: service-tests
+    command: /bin/sh -c "cd /frontend && node_modules/.bin/ts-node-dev -P server/tests/tsconfig.json -r tsconfig-paths/register --no-notify --all-deps server/tests/server.ts"
+    ports:
+      - "$SERVICE_TESTS_PORT:3002"
+
+  database:
+    image: mongo
+    container_name: database
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - advanced-testing-network
+    ports:
+      - "$DATABASE_PORT:27017"
+    volumes:
+      - ./.data/db:/data/db
+
+networks:
+  advanced-testing-network:

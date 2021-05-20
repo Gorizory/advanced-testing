@@ -1,0 +1,9 @@
+{
+    "extends": "../common/tsconfig.json",
+    "compilerOptions": {
+    },
+    "include": [
+        "../common/**/*",
+        "./**/*"
+    ]
+}
