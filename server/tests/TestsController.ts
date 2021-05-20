@@ -174,14 +174,10 @@ export default class TestsController {
                 events: body,
             },
         });
-        const result = await this.entityService.getOne({
-            _id: resultId,
-        });
 
-        const responseBody = this.entityService.prepareResponse(result);
         response
             .status(HttpStatus.OK)
-            .send(responseBody);
+            .send();
     }
 
     @Post('answer')
