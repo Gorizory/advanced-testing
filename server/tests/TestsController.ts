@@ -187,8 +187,13 @@ export default class TestsController {
     @Post('answer')
     async addAnswer(
         @Body() body: IAnswer,
+        @Res() response: Response,
     ) {
-        
+        await this.entityService.create(body);
+
+        response
+            .status(HttpStatus.CREATED)
+            .send();
     }
 
 }
