@@ -12,7 +12,6 @@ import {
     Get,
     Post,
     Patch,
-    Delete,
 
     Body,
     Controller,
@@ -21,7 +20,6 @@ import {
     Res,
 } from '@nestjs/common';
 import {
-    Request,
     Response,
 } from 'express';
 
@@ -101,18 +99,18 @@ export default class TestsController {
         await this.entityService.update(testId, {
             $push: {
                 taskIds: createdTaskId,
-            }
+            },
         });
         const test = await this.entityService.getOne({
             _id: testId,
-        })
+        });
 
         const responseBody = {
             ...(this.entityService.prepareResponse({
                 _id: createdTaskId,
             }, body)),
             ...(this.entityService.prepareResponse(test)),
-        }
+        };
         response
             .status(HttpStatus.CREATED)
             .send(responseBody);
@@ -150,7 +148,7 @@ export default class TestsController {
                 {
                     type: EventTypes.TestStart,
                     timestamp: Date.now(),
-                }
+                },
             ],
         });
         const result = await this.entityService.getOne({

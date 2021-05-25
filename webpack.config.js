@@ -24,10 +24,10 @@ const APP_ENTRY_PATH = './index.tsx';
 
 function buildAssetName(ext, isBundle) {
     if (isBundle) {
-        return `[name].bundle.${ext}`
+        return `[name].bundle.${ext}`;
     }
 
-    return `[name].chunk.${ext}`
+    return `[name].chunk.${ext}`;
 }
 
 module.exports = {

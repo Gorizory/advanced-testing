@@ -52,10 +52,10 @@ export default class EntityService implements OnModuleInit {
             return query;
         }
 
-        return  {
+        return {
             ...query,
             _id: new ObjectId(query._id),
-        }
+        };
     }
 
     prepareResponse(databaseResult: Entities, clientRequest?: Entities) {
@@ -67,7 +67,7 @@ export default class EntityService implements OnModuleInit {
         const result = {
             ...clientRequest,
             ...databaseResult,
-        }
+        };
         delete result._id;
 
         return {
