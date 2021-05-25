@@ -14,7 +14,7 @@ import {
 } from 'server/common/libs/fs';
 
 const LAYOUTS_ROOT = path.join(NODE_PATH, [
-    'microservices',
+    'server',
     'layouts',
     'hbs',
 ].join('/'));
