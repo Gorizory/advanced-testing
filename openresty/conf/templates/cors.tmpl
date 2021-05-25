@@ -1,0 +1,9 @@
+# do not use cors for unstable (we should copy/paste this values to external unstable nginx conf)
+add_header 'Access-Control-Allow-Origin' '$http_origin' always;
+add_header 'Access-Control-Allow-Credentials' 'true' always;
+add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PATCH, PUT, DELETE' always;
+add_header 'Access-Control-Allow-Headers' 'cache-control, pragma, content-type, origin, user-agent, cookie, x-request-id, x-session-id, x-user-id, x-datatype, x-node, x-signaturesize, x-token, x-versionprev' always;
+
+if ($request_method = 'OPTIONS') {
+    return 200;
+}

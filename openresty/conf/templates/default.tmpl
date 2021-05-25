@@ -1,0 +1,20 @@
+server
+{
+    include /etc/openresty/include/ssl.conf;
+
+    set_by_lua $SERVICE_TESTS_HOST 'return os.getenv("SERVICE_TESTS_HOST")';
+    set_by_lua $SERVICE_TESTS_PORT 'return os.getenv("SERVICE_TESTS_PORT")';
+    set_by_lua $SERVICE_LAYOUTS_HOST 'return os.getenv("SERVICE_LAYOUTS_HOST")';
+    set_by_lua $SERVICE_LAYOUTS_PORT 'return os.getenv("SERVICE_LAYOUTS_PORT")';
+
+    server_name {{ $.Env.DNS_NAME }};
+
+    server_name $SERVICE_TESTS_HOST;
+    server_name $SERVICE_LAYOUTS_HOST;
+
+    include /etc/openresty/include/frontend/handlers.conf;
+    include /etc/openresty/include/frontend/paths.conf;
+    include /etc/openresty/include/frontend/static.conf;
+    include /etc/openresty/include/frontend/errors.conf;
+
+}

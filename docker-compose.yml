@@ -15,6 +15,23 @@ x-frontend-volumes:
 
 services:
 
+  balancer:
+    <<: *common
+    image: advanced-testing-openresty
+    container_name: balancer
+    environment:
+      DNS_NAME: local.ingipro.ml
+    volumes:
+      # openresty
+      - ./openresty/conf:/etc/openresty
+      - ./.data/openresty/ssl:/etc/openresty/ssl
+      - ./.data/openresty/logs:/usr/local/openresty/nginx/logs
+      # frontend
+      - ./build_client:/frontend/client
+    ports:
+      - "80:80"
+      - "443:443"
+
   client:
     <<: *common
     container_name: client
@@ -26,7 +43,7 @@ services:
   service-tests:
     <<: *common
     <<: *frontend-volumes
-    container_name: service-tests
+    container_name: $SERVICE_TESTS_HOST
     command: /bin/sh -c "cd /frontend && node_modules/.bin/ts-node-dev -P server/tests/tsconfig.json -r tsconfig-paths/register --no-notify --all-deps server/tests/server.ts"
     ports:
       - "$SERVICE_TESTS_PORT:3002"
@@ -34,7 +51,7 @@ services:
   service-layouts:
     <<: *common
     <<: *frontend-volumes
-    container_name: service-layouts
+    container_name: $SERVICE_LAYOUTS_HOST
     command: /bin/sh -c "cd /frontend && node_modules/.bin/ts-node-dev -P server/layouts/tsconfig.json -r tsconfig-paths/register --no-notify --all-deps server/layouts/server.ts"
     ports:
       - "$SERVICE_LAYOUTS_PORT:3000"

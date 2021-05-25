@@ -1,0 +1,28 @@
+# Created by .ignore support plugin (hsz.mobi)
+*.DS_Store
+.AppleDouble
+.LSOverride
+.env
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+.idea/
+.data
+env/secure.env
+
+# creates while building image
+conf/conf.d/default.conf
+conf/conf.d/use_ssl.conf
+conf/include/cors.conf
+conf/ssl
