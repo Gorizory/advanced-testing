@@ -1,0 +1,11 @@
+{
+  "extends": "../common/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../build_frontback_layouts"
+  },
+  "include": [
+    "../../configs/frontback/environment/*",
+    "../common/**/*",
+    "./**/*"
+  ]
+}

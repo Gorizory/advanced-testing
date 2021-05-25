@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"/>
+    <link rel="stylesheet" href="{{{assets.maintenance.css}}}" />
+    <link rel="shortcut icon" href="/i/favicon.png">
+    <script src="{{{assets.maintenance.js}}}"></script>
+    <title>Технические работы на сервере</title>
+</head>
+<body>
+    <div class="maintenance">
+        <div class="maintenance__tool"></div>
+        <div class="maintenance__title">Технические работы на сервере</div>
+        <div id="message" class="maintenance__message"></div>
+    </div>
+
+    <script nonce="{{{locals.scriptNonce}}}">
+        window.env = {{{env}}};
+        window.__STATIC_CURRENT_VERSION__ = "{{{currentVersion}}}";
+        window.__STYLE_NONCE__="{{{locals.styleNonce}}}";
+    </script>
+</body>
+</html>

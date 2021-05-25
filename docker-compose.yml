@@ -31,6 +31,14 @@ services:
     ports:
       - "$SERVICE_TESTS_PORT:3002"
 
+  service-layouts:
+    <<: *common
+    <<: *frontend-volumes
+    container_name: service-layouts
+    command: /bin/sh -c "cd /frontend && node_modules/.bin/ts-node-dev -P server/layouts/tsconfig.json -r tsconfig-paths/register --no-notify --all-deps server/layouts/server.ts"
+    ports:
+      - "$SERVICE_LAYOUTS_PORT:3000"
+
   database:
     <<: *common
     image: mongo
