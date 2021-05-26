@@ -1,0 +1,41 @@
+@keyframes rotation {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading {
+    background-color: rgba(#fff, .5);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1000;
+
+    &_transparent {
+        background-color: transparent;
+    }
+
+    &_fill {
+        background-color: #fff;
+    }
+
+    &__spinner {
+        animation: rotation 1s linear infinite;
+        border: 3px solid #ffdb4d;
+        border-radius: 50%;
+        border-right-color: transparent;
+        height: 30px;
+        left: 50%;
+        margin-left: -15px;
+        margin-top: -15px;
+        position: absolute;
+        top: 50%;
+        width: 30px;
+    }
+}

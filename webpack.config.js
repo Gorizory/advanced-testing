@@ -5,14 +5,19 @@ require('module').Module._initPaths();
 const path = require('path');
 
 const AssetsPlugin = require('assets-webpack-plugin');
+const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 const _ = require('lodash');
 
 const {
+    NODE_ENV,
     NODE_PATH: NODE_PATH_CLI = './',
     PROJECT_ROOT: PROJECT_ROOT_CLI = './',
 } = process.env;
+const IS_DEVELOPMENT = NODE_ENV !== 'production';
 
-const PUBLIC_PATH = './';
+const PUBLIC_PATH = '/';
 
 const NODE_PATH = path.resolve(NODE_PATH_CLI);
 const PROJECT_ROOT = path.resolve(PROJECT_ROOT_CLI);
@@ -24,10 +29,20 @@ const APP_ENTRY_PATH = './index.tsx';
 
 function buildAssetName(ext, isBundle) {
     if (isBundle) {
-        return `[name].bundle.${ext}`;
+        return IS_DEVELOPMENT
+            ? `[name].bundle.${ext}`
+            : `[id].bundle.[chunkhash].${ext}`;
     }
 
-    return `[name].chunk.${ext}`;
+    return IS_DEVELOPMENT
+        ? `[name].chunk.${ext}`
+        : `[id].chunk.[chunkhash].${ext}`;
+}
+
+function buildAssetNameWithPath() {
+    return IS_DEVELOPMENT
+        ? '[path][name].[ext]'
+        : '[hash].[ext]';
 }
 
 module.exports = {
@@ -39,7 +54,7 @@ module.exports = {
         children: false,
     },
     context: APP_ROOT,
-    mode: 'development',
+    mode: NODE_ENV,
     entry: {
         app: APP_ENTRY_PATH,
     },
@@ -93,6 +108,13 @@ module.exports = {
                 return JSON.stringify(assets, null, '  ');
             },
         }),
+        new MiniCssExtractPlugin({
+            filename: buildAssetName('css', true),
+            allChunks: true,
+            chunkFilename: buildAssetName('css', false),
+        }),
+        new ExtractCssChunks(),
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru|en/),
     ].filter(Boolean),
     module: {
         rules: [
@@ -104,10 +126,68 @@ module.exports = {
                         options: {
                             useCache: true,
                             reportFiles: [
-                                '(app|common)/**/*.{ts,tsx}',
+                                '(client|common)/**/*.{ts,tsx}',
                             ],
                         },
                     },
+                ],
+            },
+            {
+                test: /\.tsx$/,
+                use: [
+                    {
+                        loader: 'string-replace-loader',
+                        options: {
+                            search: '// @import *.scss',
+                            replace: `const styles = require.context('.', true, /\\.scss$/);
+                            styles.keys().forEach(styles);`,
+                        },
+                    },
+                ],
+            },
+            {
+                test: /\.s?css$/,
+                use: [
+                    IS_DEVELOPMENT ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            name: buildAssetNameWithPath(),
+                            importLoaders: 1,
+                            sourceMap: true,
+                            minimize: IS_DEVELOPMENT ? false : {
+                                autoprefixer: false,
+                                core: true,
+                                convertValues: true,
+                                discardComments: true,
+                                discardEmpty: true,
+                                mergeRules: true,
+                                minifyGradients: true,
+                                minifySelectors: true,
+                                normalizeString: true,
+                                normalizeUrl: true,
+                                reduceBackgroundRepeat: true,
+                                reducePositions: true,
+                                reduceTransforms: true,
+                                svgo: false,
+                                styleCache: true,
+                                reduceTimingFunctions: true,
+                                reduceInitial: true,
+                                orderedValues: true,
+                                normalizeCharset: true,
+                                minifyParams: true,
+                                minifyFontValues: true,
+                                mergeLonghand: true,
+                                functionOptimiser: true,
+                                filterOptimiser: true,
+                                discardOverridden: true,
+                                discardDuplicates: true,
+                                colormin: true,
+                                zindex: false,
+                            },
+                        },
+                    },
+                    'postcss-loader',
                 ],
             },
         ],

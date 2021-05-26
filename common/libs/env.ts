@@ -5,7 +5,10 @@ let env: any = {
 
 // passed env from frontback to client
 if (typeof window !== 'undefined') {
-    Object.assign(env, (window as any)?.env);
+    env = {
+        ...env,
+        ...(window as any).env,
+    };
 }
 
 env = {
