@@ -205,10 +205,10 @@ export default class TestsController {
         const createdResultId = await this.entityService.create({
             type: EntityTypes.Result,
             testId,
-            answers: [],
+            answerIds: [],
             events: [
                 {
-                    type: EventTypes.TestStart,
+                    type: EventTypes.ResultCreated,
                     timestamp: Date.now(),
                 },
             ],
@@ -240,16 +240,28 @@ export default class TestsController {
             .send();
     }
 
-    @Post('answer')
+    @Post('answer/:resultId')
     async addAnswer(
+        @Param('resultId') resultId: string,
         @Body() body: IAnswer,
         @Res() response: Response,
     ) {
-        await this.entityService.create(body);
+        const createdAnswerId = await this.entityService.create(body);
 
+        await this.entityService.update(resultId, {
+            $push: {
+                answersIds: createdAnswerId,
+            },
+        });
+
+        const updatedResult = await this.entityService.getOne({
+            _id: resultId,
+        });
+
+        const responseBody = this.entityService.prepareResponse(updatedResult);
         response
             .status(HttpStatus.CREATED)
-            .send();
+            .send(responseBody);
     }
 
 }

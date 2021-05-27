@@ -18,6 +18,7 @@ const SECURE_FIELDS = [
     'key',
     'keyWords',
     'correctAnswers',
+    'events',
 ];
 
 @Injectable()
@@ -62,6 +63,8 @@ export default class EntityService implements OnModuleInit {
     }
 
     prepareQuery(query: any) {
+        Object.keys(query).forEach((key) => query[key] ?? delete query[key]);
+
         const {
             _id,
         } = query;

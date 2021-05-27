@@ -17,6 +17,7 @@ import {
 } from 'client/libs/urlBuilder';
 
 import EditController from 'client/controllers/Edit/Edit';
+import RunController from 'client/controllers/Run/Run';
 import NotFoundController from 'client/controllers/NotFound/NotFound';
 
 const createPath = createUrl().pathname;
@@ -28,7 +29,7 @@ export default () => (
         <Switch>
             <Route exact path={createPath} component={EditController} />
             <Route path={editPath} component={EditController} />
-            <Route path={runPath} component={() => (<span> run </span>)} />
+            <Route path={runPath} component={RunController} />
             <Route component={NotFoundController} />
         </Switch>
     </Router>

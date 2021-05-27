@@ -6,10 +6,16 @@ export enum EntityTypes {
 }
 
 export enum EventTypes {
+    // global events
+    ResultCreated = 'RESULT_CREATED',
     TestStart = 'TEST_START',
     TestFinish = 'TEST_FINISH',
-    NextQuestion = 'NEXT_QUESTION',
-    PreviousQuestion = 'PREVIOUS_QUESTION',
+    NextTask = 'NEXT_TASK',
+    PreviousTask = 'PREVIOUS_TASK',
+
+    // local events
+    MouseMove = 'MOUSE_MOVE',
+    MouseClick = 'MOUSE_CLICK',
 }
 
 export interface IBaseEntity {
@@ -43,7 +49,7 @@ export interface ITask extends ILimitedTask {
 
 export interface IResult extends IBaseEntity {
     testId: string;
-    answers: string[];
+    answerIds: string[];
     events: IEvent[];
 }
 
@@ -54,4 +60,4 @@ export interface IAnswer extends IBaseEntity {
     events: IEvent[];
 }
 
-export type IEntity = Partial<IBaseEntity | ITest | ITask | IResult>;
+export type IEntity = Partial<IBaseEntity | ITest | ITask | IResult | IAnswer>;

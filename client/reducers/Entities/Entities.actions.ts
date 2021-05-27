@@ -3,20 +3,29 @@ import {
 } from './Entities.types';
 import {
     EntityTypes,
+    IAnswer,
+    IEvent,
     ITask,
     ITest,
 } from 'common/types';
 
 import EntitiesReducer from './Entities.reducer';
 import {
-    startCreatingTest,
-    fetchTest,
-    updateTest,
     fetchTask,
     createTask,
     updateTask,
     deleteTask,
+} from 'client/dataProviders/tasks';
+import {
+    startCreatingTest,
+    fetchTest,
+    updateTest,
 } from 'client/dataProviders/tests';
+import {
+    createResult,
+    addEventToResult,
+    addAnswer,
+} from 'client/dataProviders/results';
 
 export default abstract class EntitiesActions extends EntitiesReducer.Actions {
 
@@ -65,6 +74,24 @@ export default abstract class EntitiesActions extends EntitiesReducer.Actions {
         const updatedTest = Object.values(await deleteTask(taskId, key))[0];
 
         this.mergeEntity(updatedTest);
+    }
+
+    async createResult(testId: string) {
+        const createdResult = Object.values(await createResult(testId))[0];
+
+        this.mergeEntity(createdResult);
+
+        return createdResult;
+    }
+
+    async addResultEvent(resultId: string, event: IEvent) {
+        await addEventToResult(resultId, event);
+    }
+
+    async addAnswer(resultId: string, answer: IAnswer) {
+        const updatedResult = Object.values(await addAnswer(resultId, answer))[0];
+
+        this.mergeEntity(updatedResult);
     }
 
     abstract mergeEntity(payload: MergeEntityPayload): void;
