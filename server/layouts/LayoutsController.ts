@@ -21,7 +21,7 @@ export default class LayoutsController {
     async index(
         @Res() response: Response,
     ) {
-        const layout = await this.layoutsService.render(response.locals);
+        const layout = await this.layoutsService.render();
 
         response.send(layout);
     }

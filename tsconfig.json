@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "allowJs": true,
-    "target": "es2020",
+    "target": "es5",
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "esnext",
@@ -16,7 +16,8 @@
     "resolveJsonModule": true,
     "lib": [
       "webworker",
-      "dom"
+      "dom",
+      "es2020"
     ],
     "typeRoots": [
       "./node_modules/@types"

@@ -1,5 +1,6 @@
 import {
     Query,
+    QueryParam,
 } from 'client/types/urlBuilder';
 
 import {
@@ -17,6 +18,10 @@ import {
 
 export interface ILocation<S = LocationState> extends Location<S> {
     query: Query;
+}
+
+export interface IMatchProps {
+    [QueryParam.TestId]: string;
 }
 
 export interface IHistory<HistoryLocationState = LocationState> extends History<HistoryLocationState> {

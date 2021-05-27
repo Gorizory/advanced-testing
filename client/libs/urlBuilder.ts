@@ -78,10 +78,6 @@ export function edit(testId: string, query: QueryParams = {}) {
     return createUrl([Controller.Edit, testId], query);
 }
 
-export function navigateToEdit(testId: string, query?: QueryParams) {
-    return pushUrl(edit(testId, query));
-}
-
 export function run(testId: string, query: QueryParams = {}) {
     return createUrl([Controller.Run, testId], query);
 }
@@ -95,18 +91,14 @@ export function getParam(location: ILocation, param: QueryParam) {
         query = {},
         pathname = '',
     } = location;
-    const pathName = pathname.replace(/^\//, '');
 
     switch (param) {
         case QueryParam.Controller:
             return getControllerType(pathname) || getParamDefaultValue(param);
 
-        case QueryParam.TestId:
-            return pathName.split('/')[1] || getParamDefaultValue(param);
-
-        case QueryParam.AdminKey:
+        case QueryParam.Key:
             return typeof query[param] === 'string'
-                ? query[param].split(',')
+                ? query[param]
                 : getParamDefaultValue(param);
 
         case QueryParam.Debug: {
@@ -127,8 +119,8 @@ export function getParamDefaultValue(param: QueryParam = null) {
         case QueryParam.Controller:
             return Controller.NotFound;
 
-        case QueryParam.AdminKey:
-            return null;
+        case QueryParam.Key:
+            return '';
 
         case QueryParam.Debug:
             return false;

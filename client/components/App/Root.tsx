@@ -16,6 +16,7 @@ import {
     run as runUrl,
 } from 'client/libs/urlBuilder';
 
+import EditController from 'client/controllers/Edit/Edit';
 import NotFoundController from 'client/controllers/NotFound/NotFound';
 
 const createPath = createUrl().pathname;
@@ -25,8 +26,8 @@ const runPath = runUrl(`:${QueryParam.TestId}?`).pathname;
 export default () => (
     <Router history={history}>
         <Switch>
-            <Route exact path={createPath} component={() => (<span> create </span>)} />
-            <Route path={editPath} component={() => (<span> edit </span>)} />
+            <Route exact path={createPath} component={EditController} />
+            <Route path={editPath} component={EditController} />
             <Route path={runPath} component={() => (<span> run </span>)} />
             <Route component={NotFoundController} />
         </Switch>

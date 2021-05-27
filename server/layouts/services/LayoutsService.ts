@@ -6,6 +6,9 @@ import {
 import Handlebars from 'handlebars';
 
 import {
+    APP_ENV,
+    NODE_ENV,
+    BACKEND_HOSTNAME,
     NODE_PATH,
     PROJECT_ROOT,
 } from 'common/libs/env';
@@ -31,13 +34,18 @@ export default class LayoutsService {
     private assets: any;
     private layouts: Partial<Record<LayoutType, any>> = {};
 
-    async render(locals: any) {
+    async render() {
         const assets = await this.getAssets();
 
         const render = await this.renderLayout('main');
         const layoutContent: Record<string, any> = {
             assets,
-            locals,
+            env: JSON.stringify({
+                APP_ENV,
+                NODE_ENV,
+                BACKEND_HOSTNAME,
+                IS_BROWSER: true,
+            }),
         };
 
         return render(layoutContent);

@@ -12,16 +12,22 @@ import {
     Get,
     Post,
     Patch,
+    Delete,
 
     Body,
     Controller,
     HttpStatus,
     Param,
+    Query,
     Res,
 } from '@nestjs/common';
 import {
     Response,
 } from 'express';
+import {
+    ObjectId,
+} from 'mongodb';
+import shortid from 'shortid';
 
 import EntityService from 'server/common/services/EntityService';
 
@@ -35,11 +41,13 @@ export default class TestsController {
     @Get(':testId')
     async get(
         @Param('testId') testId: string,
+        @Query() params: {key?: string},
         @Res() response: Response,
     ) {
         const test = await this.entityService.getOne({
             _id: testId,
             type: EntityTypes.Test,
+            key: params.key,
         });
 
         if (!test) {
@@ -60,14 +68,17 @@ export default class TestsController {
     ) {
         const requestedFields = {
             type: EntityTypes.Test,
-            isFinished: false,
+            name: '',
+            taskIds: [] as string[],
+            keyWords: [] as string[],
+            key: shortid.generate(),
         };
 
         const createdId = await this.entityService.create(requestedFields);
 
         const responseBody = this.entityService.prepareResponse({
             _id: createdId,
-        }, requestedFields);
+        }, requestedFields, false);
         response
             .status(HttpStatus.CREATED)
             .send(responseBody);
@@ -83,7 +94,27 @@ export default class TestsController {
             $set: body,
         });
 
-        const responseBody = this.entityService.prepareResponse({}, body);
+        const responseBody = this.entityService.prepareResponse({}, {
+            _id: testId,
+            ...body,
+        });
+        response
+            .status(HttpStatus.OK)
+            .send(responseBody);
+    }
+
+    @Get('task/:taskId')
+    async getTask(
+        @Param('taskId') taskId: string,
+        @Query() params: {key?: string},
+        @Res() response: Response,
+    ) {
+        const task = await this.entityService.getOne({
+            _id: taskId,
+            type: EntityTypes.Task,
+        });
+
+        const responseBody = this.entityService.prepareResponse(task, {}, !params.key);
         response
             .status(HttpStatus.OK)
             .send(responseBody);
@@ -92,7 +123,7 @@ export default class TestsController {
     @Post('task/:testId')
     async addTask(
         @Param('testId') testId: string,
-        @Body() body: ITest,
+        @Body() body: ITask,
         @Res() response: Response,
     ) {
         const createdTaskId = await this.entityService.create(body);
@@ -108,7 +139,7 @@ export default class TestsController {
         const responseBody = {
             ...(this.entityService.prepareResponse({
                 _id: createdTaskId,
-            }, body)),
+            }, body, false)),
             ...(this.entityService.prepareResponse(test)),
         };
         response
@@ -130,6 +161,37 @@ export default class TestsController {
         });
 
         const responseBody = this.entityService.prepareResponse(task);
+        response
+            .status(HttpStatus.OK)
+            .send(responseBody);
+    }
+
+    @Delete('task/:taskId')
+    async deleteTask(
+        @Param('taskId') taskId: string,
+        @Query() params: {key?: string},
+        @Res() response: Response,
+    ) {
+        const test = await this.entityService.getOne({
+            type: EntityTypes.Test,
+            key: params.key,
+        });
+        if (!test) {
+            response
+                .status(HttpStatus.UNAUTHORIZED)
+                .send();
+        }
+
+        await this.entityService.update(test._id, {
+            $pullAll: {
+                taskIds: [new ObjectId(taskId)],
+            },
+        });
+        const updatedTest = await this.entityService.getOne({
+            _id: test._id,
+        });
+
+        const responseBody = this.entityService.prepareResponse(updatedTest);
         response
             .status(HttpStatus.OK)
             .send(responseBody);

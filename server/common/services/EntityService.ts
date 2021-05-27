@@ -1,5 +1,5 @@
 import {
-    Entities,
+    IEntity,
 } from 'common/types';
 
 import {
@@ -13,6 +13,12 @@ import {
     Injectable,
     OnModuleInit,
 } from '@nestjs/common';
+
+const SECURE_FIELDS = [
+    'key',
+    'keyWords',
+    'correctAnswers',
+];
 
 @Injectable()
 export default class EntityService implements OnModuleInit {
@@ -29,36 +35,48 @@ export default class EntityService implements OnModuleInit {
         this.testsCollection = db.collection('tests');
     }
 
-    async create(data: Entities) {
+    async create(data: IEntity) {
         const createdTest = await this.testsCollection.insertOne(data);
 
         return createdTest.insertedId;
     }
 
-    async getOne(query: Entities) {
+    async getOne(query: IEntity) {
         return this.testsCollection.findOne(this.prepareQuery(query));
     }
 
-    async update(_id: string, updateData: UpdateQuery<Entities>) {
+    async update(_id: string, updateData: UpdateQuery<IEntity>) {
         const filter = this.prepareQuery({
             _id,
         });
 
-        return this.testsCollection.updateOne(filter, updateData);
+        return await this.testsCollection.updateOne(filter, updateData);
+    }
+
+    async delete(_id: string) {
+        const filter = this.prepareQuery({
+            _id,
+        });
+
+        return this.testsCollection.deleteOne(filter);
     }
 
     prepareQuery(query: any) {
-        if (!query._id) {
+        const {
+            _id,
+        } = query;
+        if (!_id) {
             return query;
         }
 
+        const newId = typeof _id === 'string' ? new ObjectId(_id) : _id;
         return {
             ...query,
-            _id: new ObjectId(query._id),
+            _id: newId,
         };
     }
 
-    prepareResponse(databaseResult: Entities, clientRequest?: Entities) {
+    prepareResponse(databaseResult: IEntity = {}, clientRequest: IEntity = {}, clearSecureFields = true) {
         const id = databaseResult._id || clientRequest._id;
         if (!id) {
             throw new Error();
@@ -68,7 +86,13 @@ export default class EntityService implements OnModuleInit {
             ...clientRequest,
             ...databaseResult,
         };
-        delete result._id;
+
+        if (clearSecureFields) {
+            for (const field of SECURE_FIELDS) {
+                //@ts-ignore
+                delete result[field];
+            }
+        }
 
         return {
             [id]: result,

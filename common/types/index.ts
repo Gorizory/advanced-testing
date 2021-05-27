@@ -12,7 +12,7 @@ export enum EventTypes {
     PreviousQuestion = 'PREVIOUS_QUESTION',
 }
 
-export interface IEntity {
+export interface IBaseEntity {
     _id?: string;
     type: EntityTypes,
 }
@@ -23,13 +23,14 @@ export interface IEvent {
     value?: any;
 }
 
-export interface ITest extends IEntity {
-    taskIds: string[];
-    keyWords: string[];
-    isFinished: boolean;
+export interface ITest extends IBaseEntity {
+    name?: string;
+    taskIds?: string[];
+    keyWords?: string[];
+    key: string;
 }
 
-export interface ILimitedTask extends IEntity {
+export interface ILimitedTask extends IBaseEntity {
     question: string;
     answers: string[];
     multipleCorrectAnswers: boolean;
@@ -40,17 +41,17 @@ export interface ITask extends ILimitedTask {
     correctAnswers: number[];
 }
 
-export interface IResult extends IEntity {
+export interface IResult extends IBaseEntity {
     testId: string;
     answers: string[];
     events: IEvent[];
 }
 
-export interface IAnswer extends IEntity {
+export interface IAnswer extends IBaseEntity {
     taskId: string;
     answers: number[];
     time: number;
     events: IEvent[];
 }
 
-export type Entities = Partial<IEntity | ITest | ITask | IResult>;
+export type IEntity = Partial<IBaseEntity | ITest | ITask | IResult>;

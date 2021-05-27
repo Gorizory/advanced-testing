@@ -1,0 +1,34 @@
+.test-name-form {
+    align-items: center;
+    background-color: #c8ddf6;
+    border: solid 1px #454546;
+    border-radius: 5px;
+    display: flex;
+    font-size: 25px;
+    height: 100px;
+    justify-content: space-around;
+    width: 100%;
+
+    &__name {
+        align-items: center;
+        border: solid 1px #acccff;
+        border-radius: 3px;
+        display: flex;
+        height: calc(100% - 40px);
+        justify-content: center;
+        margin: 20px;
+        width: 700px;
+    }
+
+    &__input {
+        border: solid 1px #acccff;
+        border-radius: 3px;
+        height: calc(100% - 40px);
+        margin: 20px;
+        width: 700px;
+    }
+
+    &__button {
+        white-space: nowrap;
+    }
+}

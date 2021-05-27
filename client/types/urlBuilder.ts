@@ -1,5 +1,5 @@
 export enum QueryParam {
-    AdminKey = 'adminKey',
+    Key = 'key',
     TestId = 'testId',
     Controller = 'controller',
     Debug = 'debug',
@@ -29,7 +29,7 @@ export const SaveParamValue = Symbol('saveParamValue');
 
 // reset when user logout on his own
 export const SAVE_COMMON_PARAMS = {
-    [QueryParam.AdminKey]: SaveParamValue,
+    [QueryParam.Key]: SaveParamValue,
     [QueryParam.TestId]: SaveParamValue,
     [QueryParam.Debug]: SaveParamValue,
 };

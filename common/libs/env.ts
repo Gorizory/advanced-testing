@@ -18,6 +18,7 @@ env = {
 
 export const {
     APP_ENV,
+    BACKEND_HOSTNAME,
     IS_DEVELOPMENT,
     NODE_ENV,
     NODE_PATH,
