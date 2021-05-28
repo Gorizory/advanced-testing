@@ -42,8 +42,12 @@ export default class TestForm extends PureComponent<IProps, IState> {
 
         return (
             <div className={b()}>
-                <TestNameForm {...testNameFormProps}/>
-                <TasksListForm {...tasksListFormProps}/>
+                <div className={b('name')}>
+                    <TestNameForm {...testNameFormProps}/>
+                </div>
+                <div className={b('list')}>
+                    <TasksListForm {...tasksListFormProps}/>
+                </div>
             </div>
         );
     }
