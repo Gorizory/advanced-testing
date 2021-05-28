@@ -232,7 +232,6 @@ class RunController extends BaseController<IProps, IState> {
     }
 
     private addMouseEvent(eventType: EventTypes, event: React.MouseEvent<HTMLDivElement>) {
-        event.persist();
         const {
             taskIndex,
         } = this.state;
