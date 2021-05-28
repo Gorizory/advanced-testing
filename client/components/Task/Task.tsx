@@ -4,6 +4,9 @@ import {
     IProps,
     IState,
 } from './Task.types';
+import {
+    EventTypes,
+} from 'common/types';
 
 import b_ from 'b_';
 import React, {
@@ -135,16 +138,22 @@ export default class Task extends PureComponent<IProps, IState> {
         } = this.state;
 
         if (!multipleCorrectAnswers) {
+            this.props.addEvent(EventTypes.RadioChecked, index);
+
             return this.setState({
                 answers: [index],
             });
         }
 
         if (answers.includes(index)) {
+            this.props.addEvent(EventTypes.CheckboxUnchecked, index);
+
             this.setState({
                 answers: answers.filter((i) => i !== index),
             });
         } else {
+            this.props.addEvent(EventTypes.CheckboxChecked, index);
+
             this.setState({
                 answers: [
                     ...answers,

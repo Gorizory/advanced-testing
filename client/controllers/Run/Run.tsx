@@ -53,6 +53,7 @@ class RunController extends BaseController<IProps, IState> {
         this.onChangeTask = this.onChangeTask.bind(this);
         this.onFinishTest = this.onFinishTest.bind(this);
 
+        this.addTaskEvent = this.addTaskEvent.bind(this);
         this.addMouseEvent = this.addMouseEvent.bind(this);
     }
 
@@ -131,6 +132,8 @@ class RunController extends BaseController<IProps, IState> {
             onPrevTask: (answers: number[]) => this.onChangeTask(taskIndex - 1, answers),
             onNextTask: (answers: number[]) => this.onChangeTask(taskIndex + 1, answers),
             onFinishTest: this.onFinishTest,
+
+            addEvent: this.addTaskEvent,
         };
 
         return (
@@ -172,14 +175,17 @@ class RunController extends BaseController<IProps, IState> {
 
         this.taskEvents[nextTaskIndex] = [];
 
-        const shouldAddAnswer = !_.isEqual(answers, this.answers[taskIndex]);
         this.answers[taskIndex] = answers;
 
         this.setState({
             taskIndex: nextTaskIndex,
         }, () => {
             Promise.all([
-                shouldAddAnswer
+                _.intersection(this.taskEvents[taskIndex].map(({type}) => type), [
+                    EventTypes.RadioChecked,
+                    EventTypes.CheckboxChecked,
+                    EventTypes.CheckboxUnchecked,
+                ]).length
                     ? this.props.addAnswer(resultId, {
                         type: EntityTypes.Answer,
                         taskId: tasks[taskIndex]._id,
@@ -228,6 +234,18 @@ class RunController extends BaseController<IProps, IState> {
             ]);
 
             this.taskEvents[taskIndex] = [];
+        });
+    }
+
+    addTaskEvent(eventType: EventTypes, value: string | number) {
+        const {
+            taskIndex,
+        } = this.state;
+
+        this.taskEvents[taskIndex].push({
+            type: eventType,
+            timestamp: Date.now(),
+            value,
         });
     }
 

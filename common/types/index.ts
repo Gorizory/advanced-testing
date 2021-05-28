@@ -14,6 +14,9 @@ export enum EventTypes {
     PreviousTask = 'PREVIOUS_TASK',
 
     // local events
+    RadioChecked = 'RADIO_CHECKED',
+    CheckboxChecked = 'CHECKBOX_CHECKED',
+    CheckboxUnchecked = 'CHECKBOX_UNCHECKED',
     MouseMove = 'MOUSE_MOVE',
     MouseClick = 'MOUSE_CLICK',
 }
