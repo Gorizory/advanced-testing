@@ -10,7 +10,7 @@ import React, {
     PureComponent,
 } from 'react';
 
-const b = b_.with('task-form');
+const b = b_.with('task');
 
 export default class Task extends PureComponent<IProps, IState> {
 
