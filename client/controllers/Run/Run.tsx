@@ -86,10 +86,20 @@ class RunController extends BaseController<IProps, IState> {
 
         this.checkWindowSize();
         window.addEventListener('resize', this.onResize, true);
+        window.onfocus = () => this.globalEvents.push({
+            type: EventTypes.FocusIn,
+            timestamp: Date.now(),
+        });
+        window.onblur = () => this.globalEvents.push({
+            type: EventTypes.FocusOut,
+            timestamp: Date.now(),
+        });
     }
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.onResize, true);
+        window.onfocus = () => {};
+        window.onblur = () => {};
     }
 
     render() {

@@ -252,7 +252,7 @@ export default class TestsController {
 
         await this.entityService.update(resultId, {
             $push: {
-                answersIds: createdAnswerId,
+                answerIds: createdAnswerId,
             },
         });
 

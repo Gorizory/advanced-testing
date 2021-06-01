@@ -12,8 +12,11 @@ export enum EventTypes {
     TestFinish = 'TEST_FINISH',
     NextTask = 'NEXT_TASK',
     PreviousTask = 'PREVIOUS_TASK',
+
     ConsoleOpened = 'CONSOLE_OPENED',
     Resize = 'RESIZE',
+    FocusIn = 'FOCUS_IN',
+    FocusOut = 'FOCUS_OUT',
 
     // local events
     RadioChecked = 'RADIO_CHECKED',
