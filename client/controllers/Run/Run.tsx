@@ -35,10 +35,17 @@ import {
 
 const b = b_.with('run-controller');
 
+const CONSOLE_HEIGHT_OPENED = 0.8;
+const CONSOLE_WIDTH_OPENED = 1;
+
 class RunController extends BaseController<IProps, IState> {
 
     private taskEvents: Record<number, IEvent[]> = {};
+    private globalEvents: IEvent[] = [];
     private answers: Record<number, number[]> = [];
+
+    private prevWidth: number = null;
+    private prevHeight: number = null;
 
     constructor(props: IProps) {
         super(props);
@@ -55,6 +62,8 @@ class RunController extends BaseController<IProps, IState> {
 
         this.addTaskEvent = this.addTaskEvent.bind(this);
         this.addMouseEvent = this.addMouseEvent.bind(this);
+        this.onResize = _.throttle(this.onResize.bind(this), 100);
+        this.checkWindowSize = this.checkWindowSize.bind(this);
     }
 
     async componentDidMount() {
@@ -74,6 +83,13 @@ class RunController extends BaseController<IProps, IState> {
         this.setState({
             resultId: createdResult._id,
         });
+
+        this.checkWindowSize();
+        window.addEventListener('resize', this.onResize, true);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.onResize, true);
     }
 
     render() {
@@ -158,10 +174,12 @@ class RunController extends BaseController<IProps, IState> {
 
         this.setState({
             taskIndex: 0,
-        }, () => this.props.addResultEvent(resultId, {
-            type: EventTypes.TestStart,
-            timestamp: Date.now(),
-        }));
+        }, () => this.props.addResultEvents(resultId, [
+            {
+                type: EventTypes.TestStart,
+                timestamp: Date.now(),
+            },
+        ]));
     }
 
     private onChangeTask(nextTaskIndex: number, answers: number[]) {
@@ -194,10 +212,12 @@ class RunController extends BaseController<IProps, IState> {
                         events: this.taskEvents[taskIndex],
                     })
                     : Promise.resolve(),
-                this.props.addResultEvent(resultId, {
-                    type: nextTaskIndex > taskIndex ? EventTypes.NextTask : EventTypes.PreviousTask,
-                    timestamp: Date.now(),
-                }),
+                this.props.addResultEvents(resultId, [
+                    {
+                        type: nextTaskIndex > taskIndex ? EventTypes.NextTask : EventTypes.PreviousTask,
+                        timestamp: Date.now(),
+                    },
+                ]),
             ]);
         });
     }
@@ -227,10 +247,13 @@ class RunController extends BaseController<IProps, IState> {
                         events: this.taskEvents[taskIndex],
                     })
                     : Promise.resolve(),
-                this.props.addResultEvent(resultId, {
-                    type: EventTypes.TestFinish,
-                    timestamp: Date.now(),
-                }),
+                this.props.addResultEvents(resultId, [
+                    ...this.globalEvents,
+                    {
+                        type: EventTypes.TestFinish,
+                        timestamp: Date.now(),
+                    },
+                ]),
             ]);
 
             this.taskEvents[taskIndex] = [];
@@ -264,6 +287,29 @@ class RunController extends BaseController<IProps, IState> {
         });
     }
 
+    private onResize() {
+        this.globalEvents.push({
+            type: EventTypes.Resize,
+            timestamp: Date.now(),
+        });
+        this.checkWindowSize();
+    }
+
+    private checkWindowSize() {
+        if (
+            (
+                window.innerWidth / window.outerWidth < CONSOLE_WIDTH_OPENED
+                || window.innerHeight / window.outerHeight < CONSOLE_HEIGHT_OPENED
+            )
+            && this.globalEvents.every(({type}) => type !== EventTypes.ConsoleOpened)
+        ) {
+            this.globalEvents.push({
+                type: EventTypes.ConsoleOpened,
+                timestamp: Date.now(),
+            });
+        }
+    }
+
 }
 
 const mapStateToProps = (state: any, ownProps: IOwnProps): IMapStateToProps => {
@@ -292,7 +338,7 @@ const mapActionsToProps = (state: any): IMapActionsToProps => {
         fetchTest: entitiesActions.fetchTest,
         fetchTask: entitiesActions.fetchTask,
         createResult: entitiesActions.createResult,
-        addResultEvent: entitiesActions.addResultEvent,
+        addResultEvents: entitiesActions.addResultEvents,
         addAnswer: entitiesActions.addAnswer,
         ...baseMapActionsToProps(),
     };

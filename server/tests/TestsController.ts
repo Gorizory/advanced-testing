@@ -226,12 +226,14 @@ export default class TestsController {
     @Patch('result/:resultId')
     async addEventToResult(
         @Param('resultId') resultId: string,
-        @Body() body: IEvent,
+        @Body() body: IEvent[],
         @Res() response: Response,
     ) {
         await this.entityService.update(resultId, {
             $push: {
-                events: body,
+                events: {
+                    $each: body,
+                },
             },
         });
 

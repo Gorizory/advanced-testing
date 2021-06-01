@@ -17,10 +17,10 @@ export async function createResult(testId: string) {
     });
 }
 
-export async function addEventToResult(resultId: string, event: IEvent) {
+export async function addEventsToResult(resultId: string, events: IEvent[]) {
     return fetchBackend<void>(`${handlers.tests.updateResult}/${resultId}`, {
         method: 'PATCH',
-        data: event,
+        data: events,
     });
 }
 

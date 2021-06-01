@@ -23,7 +23,7 @@ import {
 } from 'client/dataProviders/tests';
 import {
     createResult,
-    addEventToResult,
+    addEventsToResult,
     addAnswer,
 } from 'client/dataProviders/results';
 
@@ -84,8 +84,8 @@ export default abstract class EntitiesActions extends EntitiesReducer.Actions {
         return createdResult;
     }
 
-    async addResultEvent(resultId: string, event: IEvent) {
-        await addEventToResult(resultId, event);
+    async addResultEvents(resultId: string, events: IEvent[]) {
+        await addEventsToResult(resultId, events);
     }
 
     async addAnswer(resultId: string, answer: IAnswer) {

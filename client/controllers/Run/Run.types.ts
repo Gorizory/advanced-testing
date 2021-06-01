@@ -25,7 +25,7 @@ export interface IMapActionsToProps extends IBaseMapActionsToProps {
     fetchTest: (testId: string) => Promise<ITest>;
     fetchTask: (taskId: string) => Promise<void>;
     createResult: (testId: string) => Promise<IResult>;
-    addResultEvent: (resultId: string, event: IEvent) => Promise<void>;
+    addResultEvents: (resultId: string, events: IEvent[]) => Promise<void>;
     addAnswer: (resultId: string, answer: IAnswer) => Promise<void>;
 }
 
