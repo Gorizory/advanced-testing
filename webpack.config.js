@@ -58,6 +58,7 @@ module.exports = {
     entry: {
         app: APP_ENTRY_PATH,
     },
+    watch: IS_DEVELOPMENT,
     watchOptions: {
         aggregateTimeout: 300,
         poll: 500,

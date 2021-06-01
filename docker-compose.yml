@@ -38,7 +38,7 @@ services:
     command: /bin/sh -c "
       cd /frontend
       && mkdir -p build_client && cp -r static/i build_client
-      && node_modules/.bin/webpack --color --watch
+      && node_modules/.bin/webpack --color
       "
     volumes:
       # sources
