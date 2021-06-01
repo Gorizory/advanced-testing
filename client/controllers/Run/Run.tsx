@@ -43,9 +43,7 @@ class RunController extends BaseController<IProps, IState> {
     private taskEvents: Record<number, IEvent[]> = {};
     private globalEvents: IEvent[] = [];
     private answers: Record<number, number[]> = [];
-
-    private prevWidth: number = null;
-    private prevHeight: number = null;
+    private taskStartTime: number = null;
 
     constructor(props: IProps) {
         super(props);
@@ -181,6 +179,7 @@ class RunController extends BaseController<IProps, IState> {
         } = this.state;
 
         this.taskEvents[0] = [];
+        this.taskStartTime = Date.now();
 
         this.setState({
             taskIndex: 0,
@@ -205,6 +204,9 @@ class RunController extends BaseController<IProps, IState> {
 
         this.answers[taskIndex] = answers;
 
+        const taskTime = Date.now() - this.taskStartTime;
+        this.taskStartTime = Date.now();
+
         this.setState({
             taskIndex: nextTaskIndex,
         }, () => {
@@ -218,7 +220,7 @@ class RunController extends BaseController<IProps, IState> {
                         type: EntityTypes.Answer,
                         taskId: tasks[taskIndex]._id,
                         answers,
-                        time: 0,
+                        time: taskTime,
                         events: this.taskEvents[taskIndex],
                     })
                     : Promise.resolve(),
@@ -241,19 +243,24 @@ class RunController extends BaseController<IProps, IState> {
             taskIndex,
         } = this.state;
 
-        const shouldAddAnswer = !_.isEqual(answers, this.answers[taskIndex]);
         this.answers[taskIndex] = answers;
+
+        const taskTime = Date.now() - this.taskStartTime;
 
         this.setState({
             finished: true,
         }, () => {
             Promise.all([
-                shouldAddAnswer
+                _.intersection(this.taskEvents[taskIndex].map(({type}) => type), [
+                    EventTypes.RadioChecked,
+                    EventTypes.CheckboxChecked,
+                    EventTypes.CheckboxUnchecked,
+                ]).length
                     ? this.props.addAnswer(resultId, {
                         type: EntityTypes.Answer,
                         taskId: tasks[taskIndex]._id,
                         answers,
-                        time: 0,
+                        time: taskTime,
                         events: this.taskEvents[taskIndex],
                     })
                     : Promise.resolve(),
