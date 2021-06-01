@@ -10,9 +10,17 @@ import {
     UpdateQuery,
 } from 'mongodb';
 import {
+    format,
+} from 'util';
+import {
     Injectable,
     OnModuleInit,
 } from '@nestjs/common';
+
+import {
+    DATABASE_USER,
+    DATABASE_PASSWORD,
+} from 'common/libs/env';
 
 const SECURE_FIELDS = [
     'key',
@@ -21,10 +29,14 @@ const SECURE_FIELDS = [
     'events',
 ];
 
+const user = encodeURIComponent(DATABASE_USER);
+const password = encodeURIComponent(DATABASE_PASSWORD);
+const databaseUrl = format('mongodb://%s:%s@database:27017', user, password);
+
 @Injectable()
 export default class EntityService implements OnModuleInit {
 
-    private client = new MongoClient('mongodb://database:27017', {
+    private client = new MongoClient(databaseUrl, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });

@@ -5,10 +5,7 @@ let env: any = {
 
 // passed env from frontback to client
 if (typeof window !== 'undefined') {
-    env = {
-        ...env,
-        ...(window as any).env,
-    };
+    env = (window as any).env;
 }
 
 env = {
@@ -23,6 +20,8 @@ export const {
     NODE_ENV,
     NODE_PATH,
     PROJECT_ROOT,
+    DATABASE_USER,
+    DATABASE_PASSWORD,
 } = env;
 
 export default env;
