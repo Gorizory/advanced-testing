@@ -20,7 +20,7 @@ services:
     image: advanced-testing-openresty
     container_name: balancer
     environment:
-      DNS_NAME: local.ingipro.ml
+      DNS_NAME: $BACKEND_HOSTNAME
     volumes:
       # openresty
       - ./openresty/conf:/etc/openresty
