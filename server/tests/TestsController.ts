@@ -30,12 +30,14 @@ import {
 import shortid from 'shortid';
 
 import EntityService from 'server/common/services/EntityService';
+import PointsService from 'server/common/services/PointsService';
 
 @Controller('tests')
 export default class TestsController {
 
     constructor(
-        private readonly entityService: EntityService
+        private readonly entityService: EntityService,
+        private readonly pointsService: PointsService,
     ) {}
 
     @Get(':testId')
@@ -126,7 +128,11 @@ export default class TestsController {
         @Body() body: ITask,
         @Res() response: Response,
     ) {
-        const createdTaskId = await this.entityService.create(body);
+        const task = {
+            ...body,
+            points: this.pointsService.calculateMaxTaskPoint(body),
+        };
+        const createdTaskId = await this.entityService.create(task);
         await this.entityService.update(testId, {
             $push: {
                 taskIds: createdTaskId,
@@ -139,7 +145,7 @@ export default class TestsController {
         const responseBody = {
             ...(this.entityService.prepareResponse({
                 _id: createdTaskId,
-            }, body, false)),
+            }, task, false)),
             ...(this.entityService.prepareResponse(test)),
         };
         response
@@ -154,7 +160,10 @@ export default class TestsController {
         @Res() response: Response,
     ) {
         await this.entityService.update(taskId, {
-            $set: body,
+            $set: {
+                ...body,
+                points: this.pointsService.calculateMaxTaskPoint(body),
+            },
         });
         const task = await this.entityService.getOne({
             _id: taskId,

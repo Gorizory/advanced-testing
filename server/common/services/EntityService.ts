@@ -28,6 +28,7 @@ const SECURE_FIELDS = [
     'correctAnswers',
     'answersGroups',
     'eventIds',
+    'points',
 ];
 
 const user = encodeURIComponent(DATABASE_USER);

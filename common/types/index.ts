@@ -1,9 +1,3 @@
-import {
-    ObjectId,
-} from 'mongodb';
-
-export type EntityId = string | ObjectId;
-
 export enum EntityTypes {
     Test = 'TEST',
     Task = 'TASK',
@@ -59,21 +53,22 @@ export interface ITask extends IBaseEntity {
     answers: string[];
     answersGroups: AnswersGroups[];
     multipleCorrectAnswers: boolean;
+    points?: number;
     keyWords?: string[];
     correctAnswers?: number[];
 }
 
 export interface IResult extends IBaseEntity {
     testId: string;
-    answerIds: EntityId[];
-    eventIds?: EntityId[];
+    answerIds: string[];
+    eventIds?: string[];
 }
 
 export interface IAnswer extends IBaseEntity {
     taskId: string;
     answers: number[];
     time: number;
-    eventIds?: EntityId[];
+    eventIds?: string[];
 }
 
 export interface IEvent extends IBaseEntity {
