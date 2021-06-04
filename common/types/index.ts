@@ -1,8 +1,17 @@
+import {
+    ObjectId,
+} from 'mongodb';
+
+export type EntityId = string | ObjectId;
+
 export enum EntityTypes {
     Test = 'TEST',
     Task = 'TASK',
     Result = 'RESULT',
     Answer = 'ANSWER',
+
+    GlobalEvent = 'GLOBAL_EVENT',
+    TaskEvent = 'TASK_EVENT',
 }
 
 export enum EventTypes {
@@ -38,12 +47,6 @@ export interface IBaseEntity {
     type: EntityTypes,
 }
 
-export interface IEvent {
-    type: EventTypes;
-    timestamp: number;
-    value?: any;
-}
-
 export interface ITest extends IBaseEntity {
     name?: string;
     taskIds?: string[];
@@ -62,15 +65,21 @@ export interface ITask extends IBaseEntity {
 
 export interface IResult extends IBaseEntity {
     testId: string;
-    answerIds: string[];
-    events: IEvent[];
+    answerIds: EntityId[];
+    eventIds?: EntityId[];
 }
 
 export interface IAnswer extends IBaseEntity {
     taskId: string;
     answers: number[];
     time: number;
-    events: IEvent[];
+    eventIds?: EntityId[];
 }
 
-export type IEntity = Partial<IBaseEntity | ITest | ITask | IResult | IAnswer>;
+export interface IEvent extends IBaseEntity {
+    eventType: EventTypes;
+    timestamp: number;
+    value?: any;
+}
+
+export type IEntity = Partial<IBaseEntity | ITest | ITask | IResult | IAnswer | IEvent>;

@@ -85,11 +85,13 @@ class RunController extends BaseController<IProps, IState> {
         this.checkWindowSize();
         window.addEventListener('resize', this.onResize, true);
         window.onfocus = () => this.globalEvents.push({
-            type: EventTypes.FocusIn,
+            type: EntityTypes.GlobalEvent,
+            eventType: EventTypes.FocusIn,
             timestamp: Date.now(),
         });
         window.onblur = () => this.globalEvents.push({
-            type: EventTypes.FocusOut,
+            type: EntityTypes.GlobalEvent,
+            eventType: EventTypes.FocusOut,
             timestamp: Date.now(),
         });
     }
@@ -185,7 +187,8 @@ class RunController extends BaseController<IProps, IState> {
             taskIndex: 0,
         }, () => this.props.addResultEvents(resultId, [
             {
-                type: EventTypes.TestStart,
+                type: EntityTypes.GlobalEvent,
+                eventType: EventTypes.TestStart,
                 timestamp: Date.now(),
             },
         ]));
@@ -211,7 +214,7 @@ class RunController extends BaseController<IProps, IState> {
             taskIndex: nextTaskIndex,
         }, () => {
             Promise.all([
-                _.intersection(this.taskEvents[taskIndex].map(({type}) => type), [
+                _.intersection(this.taskEvents[taskIndex].map(({eventType}) => eventType), [
                     EventTypes.RadioChecked,
                     EventTypes.CheckboxChecked,
                     EventTypes.CheckboxUnchecked,
@@ -221,12 +224,12 @@ class RunController extends BaseController<IProps, IState> {
                         taskId: tasks[taskIndex]._id,
                         answers,
                         time: taskTime,
-                        events: this.taskEvents[taskIndex],
-                    })
+                    }, this.taskEvents[taskIndex])
                     : Promise.resolve(),
                 this.props.addResultEvents(resultId, [
                     {
-                        type: nextTaskIndex > taskIndex ? EventTypes.NextTask : EventTypes.PreviousTask,
+                        type: EntityTypes.GlobalEvent,
+                        eventType: nextTaskIndex > taskIndex ? EventTypes.NextTask : EventTypes.PreviousTask,
                         timestamp: Date.now(),
                     },
                 ]),
@@ -251,7 +254,7 @@ class RunController extends BaseController<IProps, IState> {
             finished: true,
         }, () => {
             Promise.all([
-                _.intersection(this.taskEvents[taskIndex].map(({type}) => type), [
+                _.intersection(this.taskEvents[taskIndex].map(({eventType}) => eventType), [
                     EventTypes.RadioChecked,
                     EventTypes.CheckboxChecked,
                     EventTypes.CheckboxUnchecked,
@@ -261,13 +264,13 @@ class RunController extends BaseController<IProps, IState> {
                         taskId: tasks[taskIndex]._id,
                         answers,
                         time: taskTime,
-                        events: this.taskEvents[taskIndex],
-                    })
+                    }, this.taskEvents[taskIndex])
                     : Promise.resolve(),
                 this.props.addResultEvents(resultId, [
                     ...this.globalEvents,
                     {
-                        type: EventTypes.TestFinish,
+                        type: EntityTypes.GlobalEvent,
+                        eventType: EventTypes.TestFinish,
                         timestamp: Date.now(),
                     },
                 ]),
@@ -283,7 +286,8 @@ class RunController extends BaseController<IProps, IState> {
         } = this.state;
 
         this.taskEvents[taskIndex].push({
-            type: eventType,
+            type: EntityTypes.TaskEvent,
+            eventType,
             timestamp: Date.now(),
             value,
         });
@@ -295,7 +299,8 @@ class RunController extends BaseController<IProps, IState> {
         } = this.state;
 
         this.taskEvents[taskIndex].push({
-            type: eventType,
+            type: EntityTypes.TaskEvent,
+            eventType,
             timestamp: Date.now(),
             value: {
                 x: event.screenX,
@@ -306,7 +311,8 @@ class RunController extends BaseController<IProps, IState> {
 
     private onResize() {
         this.globalEvents.push({
-            type: EventTypes.Resize,
+            type: EntityTypes.GlobalEvent,
+            eventType: EventTypes.Resize,
             timestamp: Date.now(),
         });
         this.checkWindowSize();
@@ -318,10 +324,11 @@ class RunController extends BaseController<IProps, IState> {
                 window.innerWidth / window.outerWidth < CONSOLE_WIDTH_OPENED
                 || window.innerHeight / window.outerHeight < CONSOLE_HEIGHT_OPENED
             )
-            && this.globalEvents.every(({type}) => type !== EventTypes.ConsoleOpened)
+            && this.globalEvents.every(({eventType}) => eventType !== EventTypes.ConsoleOpened)
         ) {
             this.globalEvents.push({
-                type: EventTypes.ConsoleOpened,
+                type: EntityTypes.GlobalEvent,
+                eventType: EventTypes.ConsoleOpened,
                 timestamp: Date.now(),
             });
         }

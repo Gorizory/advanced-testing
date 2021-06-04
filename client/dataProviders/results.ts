@@ -24,9 +24,12 @@ export async function addEventsToResult(resultId: string, events: IEvent[]) {
     });
 }
 
-export async function addAnswer(resultId: string, answer: IAnswer) {
+export async function addAnswer(resultId: string, answer: IAnswer, events: IEvent[]) {
     return fetchBackend<IResult>(`${handlers.tests.answer}/${resultId}`, {
         method: 'POST',
-        data: answer,
+        data: {
+            answer,
+            events,
+        },
     });
 }

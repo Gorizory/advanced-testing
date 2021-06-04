@@ -202,16 +202,17 @@ export default class TestsController {
         @Param('testId') testId: string,
         @Res() response: Response,
     ) {
+        const createdEventId = await this.entityService.create({
+            type: EntityTypes.GlobalEvent,
+            eventType: EventTypes.ResultCreated,
+            timestamp: Date.now(),
+        });
+
         const createdResultId = await this.entityService.create({
             type: EntityTypes.Result,
             testId,
             answerIds: [],
-            events: [
-                {
-                    type: EventTypes.ResultCreated,
-                    timestamp: Date.now(),
-                },
-            ],
+            eventIds: [createdEventId],
         });
         const result = await this.entityService.getOne({
             _id: createdResultId,
@@ -229,10 +230,12 @@ export default class TestsController {
         @Body() body: IEvent[],
         @Res() response: Response,
     ) {
+        const createdEventsIds = await this.entityService.createSeveral(body);
+
         await this.entityService.update(resultId, {
             $push: {
-                events: {
-                    $each: body,
+                eventIds: {
+                    $each: Object.values(createdEventsIds),
                 },
             },
         });
@@ -245,10 +248,18 @@ export default class TestsController {
     @Post('answer/:resultId')
     async addAnswer(
         @Param('resultId') resultId: string,
-        @Body() body: IAnswer,
+        @Body() body: {
+            answer: IAnswer,
+            events: IEvent[],
+        },
         @Res() response: Response,
     ) {
-        const createdAnswerId = await this.entityService.create(body);
+        const createdEventIds = await this.entityService.createSeveral(body.events);
+
+        const createdAnswerId = await this.entityService.create({
+            ...body.answer,
+            eventIds: Object.values(createdEventIds),
+        });
 
         await this.entityService.update(resultId, {
             $push: {

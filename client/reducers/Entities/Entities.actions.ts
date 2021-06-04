@@ -88,8 +88,8 @@ export default abstract class EntitiesActions extends EntitiesReducer.Actions {
         await addEventsToResult(resultId, events);
     }
 
-    async addAnswer(resultId: string, answer: IAnswer) {
-        const updatedResult = Object.values(await addAnswer(resultId, answer))[0];
+    async addAnswer(resultId: string, answer: IAnswer, events: IEvent[]) {
+        const updatedResult = Object.values(await addAnswer(resultId, answer, events))[0];
 
         this.mergeEntity(updatedResult);
     }

@@ -26,7 +26,8 @@ const SECURE_FIELDS = [
     'key',
     'keyWords',
     'correctAnswers',
-    'events',
+    'answersGroups',
+    'eventIds',
 ];
 
 const user = encodeURIComponent(DATABASE_USER);
@@ -49,9 +50,15 @@ export default class EntityService implements OnModuleInit {
     }
 
     async create(data: IEntity) {
-        const createdTest = await this.testsCollection.insertOne(data);
+        const createdEntity = await this.testsCollection.insertOne(data);
 
-        return createdTest.insertedId;
+        return createdEntity.insertedId;
+    }
+
+    async createSeveral(data: IEntity[]) {
+        const createdEntities = await this.testsCollection.insertMany(data);
+
+        return createdEntities.insertedIds;
     }
 
     async getOne(query: IEntity) {
