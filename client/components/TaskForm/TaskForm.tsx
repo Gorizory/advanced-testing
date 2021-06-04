@@ -220,7 +220,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
                                         })
                                         : (
                                             <option>
-                                                Верный ответ
+                                                {answersGroupsMap[AnswersGroups.Correct]}
                                             </option>
                                         )
                                     }
