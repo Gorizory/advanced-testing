@@ -1,4 +1,5 @@
 import {
+    AnswersGroups,
     ITask,
 } from 'common/types';
 
@@ -15,6 +16,7 @@ export interface IState {
 
     currentQuestion: string;
     currentAnswers: string[]
+    currentAnswersGroups: AnswersGroups[];
     currentCorrectAnswers: number[];
     currentMultipleCorrectAnswers: boolean;
 }

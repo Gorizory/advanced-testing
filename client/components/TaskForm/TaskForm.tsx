@@ -5,6 +5,10 @@ import {
     IState,
 } from './TaskForm.types';
 
+import {
+    AnswersGroups,
+} from 'common/types';
+
 import b_ from 'b_';
 import React, {
     ChangeEvent,
@@ -12,6 +16,13 @@ import React, {
 } from 'react';
 
 const b = b_.with('task-form');
+
+const answersGroupsMap = {
+    [AnswersGroups.Correct]: 'Верный ответ',
+    [AnswersGroups.PartiallyCorrect]: 'Частично верный ответ',
+    [AnswersGroups.Incorrect]: 'Неверный ответ',
+    [AnswersGroups.TotallyIncorrect]: 'Полностью неверный ответ',
+};
 
 export default class TaskForm extends PureComponent<IProps, IState> {
 
@@ -22,6 +33,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
             task: {
                 question,
                 answers,
+                answersGroups,
                 correctAnswers,
                 multipleCorrectAnswers,
             },
@@ -33,6 +45,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
 
             currentQuestion: question,
             currentAnswers: answers,
+            currentAnswersGroups: answersGroups,
             currentCorrectAnswers: correctAnswers,
             currentMultipleCorrectAnswers: multipleCorrectAnswers,
         };
@@ -40,6 +53,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
         this.onChangeQuestion = this.onChangeQuestion.bind(this);
         this.onChangeMultipleCorrectAnswers = this.onChangeMultipleCorrectAnswers.bind(this);
         this.onChangeAnswer = this.onChangeAnswer.bind(this);
+        this.onChangeAnswerGroup = this.onChangeAnswerGroup.bind(this);
         this.onChangeCorrectAnswer = this.onChangeCorrectAnswer.bind(this);
         this.onAddAnswer = this.onAddAnswer.bind(this);
         this.onRemoveAnswer = this.onRemoveAnswer.bind(this);
@@ -53,6 +67,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
 
             currentQuestion,
             currentAnswers,
+            currentAnswersGroups,
             currentCorrectAnswers,
             currentMultipleCorrectAnswers,
         } = this.state;
@@ -97,7 +112,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
                             >
                                 <input {...correctAnswerProps}/>
                                 <div>
-                                    {answer}
+                                    {`${answer} | ${answersGroupsMap[currentAnswersGroups[index]]}`}
                                 </div>
                             </div>
                         );
@@ -163,6 +178,14 @@ export default class TaskForm extends PureComponent<IProps, IState> {
                         onChange: (event: ChangeEvent<HTMLInputElement>) => this.onChangeAnswer(index, event),
                     };
 
+                    const answerGroupSelectProps = {
+                        className: b('select'),
+                        size: 1,
+                        value: currentAnswersGroups[index],
+                        disabled: currentAnswersGroups[index] === AnswersGroups.Correct,
+                        onChange: (evt: ChangeEvent<HTMLSelectElement>) => this.onChangeAnswerGroup(index, evt),
+                    };
+
                     const deleteAnswerButtonProps = {
                         className: b('button'),
                         children: 'Удалить ответ',
@@ -177,6 +200,31 @@ export default class TaskForm extends PureComponent<IProps, IState> {
                             <input {...correctAnswerProps}/>
                             <div className={b('answer')}>
                                 <input {...answerInputProps}/>
+                                <select {...answerGroupSelectProps}>
+                                    {currentAnswersGroups[index] !== AnswersGroups.Correct
+                                        ? Object.values(AnswersGroups).map((answersGroup) => {
+                                            if (answersGroup === AnswersGroups.Correct) {
+                                                return null;
+                                            }
+
+                                            const optionProps = {
+                                                key: answersGroup,
+                                                value: answersGroup,
+                                                children: answersGroupsMap[answersGroup],
+                                            };
+
+                                            return (
+                                                // eslint-disable-next-line react/jsx-key
+                                                <option {...optionProps}/>
+                                            );
+                                        })
+                                        : (
+                                            <option>
+                                                Верный ответ
+                                            </option>
+                                        )
+                                    }
+                                </select>
                                 <button {...deleteAnswerButtonProps}/>
                             </div>
                         </div>
@@ -204,14 +252,22 @@ export default class TaskForm extends PureComponent<IProps, IState> {
     private onChangeMultipleCorrectAnswers() {
         const {
             currentMultipleCorrectAnswers,
+            currentAnswersGroups,
             currentCorrectAnswers,
         } = this.state;
 
         const updatedMultipleCorrectAnswers = !currentMultipleCorrectAnswers;
+        const updatedCorrectAnswers = updatedMultipleCorrectAnswers ? currentCorrectAnswers : currentCorrectAnswers.slice(0, 1);
 
         this.setState({
             currentMultipleCorrectAnswers: updatedMultipleCorrectAnswers,
-            currentCorrectAnswers: updatedMultipleCorrectAnswers ? currentCorrectAnswers : currentCorrectAnswers.slice(0, 1),
+            currentAnswersGroups: updatedMultipleCorrectAnswers ? currentAnswersGroups : currentAnswersGroups.map((value, index) =>
+                value !== AnswersGroups.Correct
+                    ? value
+                    : index === updatedCorrectAnswers[0]
+                        ? AnswersGroups.Correct
+                        : AnswersGroups.Incorrect),
+            currentCorrectAnswers: updatedCorrectAnswers,
         });
     }
 
@@ -228,24 +284,52 @@ export default class TaskForm extends PureComponent<IProps, IState> {
         });
     }
 
+    private onChangeAnswerGroup(index: number, event: ChangeEvent<HTMLSelectElement>) {
+        const {
+            currentAnswersGroups,
+        } = this.state;
+
+        const updatedAnswersGroups = [
+            ...currentAnswersGroups,
+        ];
+        updatedAnswersGroups[index] = event.target.value as AnswersGroups;
+
+        this.setState({
+            currentAnswersGroups: updatedAnswersGroups,
+        });
+    }
+
     private onChangeCorrectAnswer(index: number) {
         const {
+            currentAnswersGroups,
             currentCorrectAnswers,
             currentMultipleCorrectAnswers,
         } = this.state;
 
         if (!currentMultipleCorrectAnswers) {
             return this.setState({
+                currentAnswersGroups: currentAnswersGroups.map((value, i) =>
+                    i === index
+                        ? AnswersGroups.Correct
+                        : value === AnswersGroups.Correct
+                            ? AnswersGroups.Incorrect
+                            : value),
                 currentCorrectAnswers: [index],
             });
         }
 
         if (currentCorrectAnswers.includes(index)) {
             this.setState({
+                currentAnswersGroups: currentAnswersGroups.map((value, i) => i === index
+                    ? AnswersGroups.Incorrect
+                    : value),
                 currentCorrectAnswers: currentCorrectAnswers.filter((v) => v !== index),
             });
         } else {
             this.setState({
+                currentAnswersGroups: currentAnswersGroups.map((value, i) => i === index
+                    ? AnswersGroups.Correct
+                    : value),
                 currentCorrectAnswers: [
                     ...currentCorrectAnswers,
                     index,
@@ -255,10 +339,14 @@ export default class TaskForm extends PureComponent<IProps, IState> {
     }
 
     private onAddAnswer() {
-        this.setState(({currentAnswers}) => ({
+        this.setState(({currentAnswers, currentAnswersGroups}) => ({
             currentAnswers: [
                 ...currentAnswers,
                 '',
+            ],
+            currentAnswersGroups: [
+                ...currentAnswersGroups,
+                AnswersGroups.Incorrect,
             ],
         }));
     }
@@ -285,6 +373,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
         const {
             currentQuestion,
             currentAnswers,
+            currentAnswersGroups,
             currentCorrectAnswers,
             currentMultipleCorrectAnswers,
         } = this.state;
@@ -293,6 +382,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
             ...this.props.task,
             question: currentQuestion,
             answers: currentAnswers,
+            answersGroups: currentAnswersGroups,
             correctAnswers: currentCorrectAnswers,
             multipleCorrectAnswers: currentMultipleCorrectAnswers,
         });

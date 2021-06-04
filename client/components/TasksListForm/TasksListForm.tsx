@@ -5,6 +5,7 @@ import {
     IState,
 } from './TasksListForm.types';
 import {
+    AnswersGroups,
     EntityTypes,
     ITask,
 } from 'common/types';
@@ -46,6 +47,7 @@ export default class TasksListForm extends PureComponent<IProps, IState> {
                 type: EntityTypes.Task,
                 question: '',
                 answers: ['', ''],
+                answersGroups: [AnswersGroups.Incorrect, AnswersGroups.Incorrect],
                 correctAnswers: [] as number[],
                 keyWords: [] as string[],
                 multipleCorrectAnswers: false,

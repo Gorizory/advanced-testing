@@ -26,6 +26,13 @@ export enum EventTypes {
     MouseClick = 'MOUSE_CLICK',
 }
 
+export enum AnswersGroups {
+    Correct = 'CORRECT',
+    PartiallyCorrect = 'PARTIALLY_CORRECT',
+    Incorrect = 'INCORRECT',
+    TotallyIncorrect = 'TOTALLY_INCORRECT',
+}
+
 export interface IBaseEntity {
     _id?: string;
     type: EntityTypes,
@@ -44,15 +51,13 @@ export interface ITest extends IBaseEntity {
     key: string;
 }
 
-export interface ILimitedTask extends IBaseEntity {
+export interface ITask extends IBaseEntity {
     question: string;
     answers: string[];
+    answersGroups: AnswersGroups[];
     multipleCorrectAnswers: boolean;
-}
-
-export interface ITask extends ILimitedTask {
-    keyWords: string[];
-    correctAnswers: number[];
+    keyWords?: string[];
+    correctAnswers?: number[];
 }
 
 export interface IResult extends IBaseEntity {
