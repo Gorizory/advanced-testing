@@ -146,7 +146,7 @@ export default class TestsController {
             ...(this.entityService.prepareResponse({
                 _id: createdTaskId,
             }, task, false)),
-            ...(this.entityService.prepareResponse(test)),
+            ...(this.entityService.prepareResponse(test, {}, false)),
         };
         response
             .status(HttpStatus.CREATED)
@@ -169,7 +169,7 @@ export default class TestsController {
             _id: taskId,
         });
 
-        const responseBody = this.entityService.prepareResponse(task);
+        const responseBody = this.entityService.prepareResponse(task, {}, false);
         response
             .status(HttpStatus.OK)
             .send(responseBody);

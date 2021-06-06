@@ -33,7 +33,10 @@ export default class PointsService {
         });
 
         return Math.round(Object.values(AnswersGroups).reduce((points, group) => {
-            return points * taskPointsModifiers[group](answersGroupsCount[group] || 1);
+            if (!answersGroupsCount[group]) {
+                return points;
+            }
+            return points * taskPointsModifiers[group](answersGroupsCount[group]);
         }, basePoints)
             * taskPointsModifiers.total(answersCount));
     }
