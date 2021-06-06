@@ -135,7 +135,7 @@ export default class TestsController {
         const createdTaskId = await this.entityService.create(task);
         await this.entityService.update(testId, {
             $push: {
-                taskIds: createdTaskId,
+                taskIds: createdTaskId.toHexString(),
             },
         });
         const test = await this.entityService.getOne({
@@ -211,18 +211,25 @@ export default class TestsController {
         @Param('testId') testId: string,
         @Res() response: Response,
     ) {
-        const createdEventId = await this.entityService.create({
-            type: EntityTypes.GlobalEvent,
-            eventType: EventTypes.ResultCreated,
-            timestamp: Date.now(),
-        });
-
         const createdResultId = await this.entityService.create({
             type: EntityTypes.Result,
             testId,
             answerIds: [],
-            eventIds: [createdEventId],
+            eventIds: [],
         });
+        const createdEventId = await this.entityService.create({
+            type: EntityTypes.GlobalEvent,
+            eventType: EventTypes.ResultCreated,
+            resultId: createdResultId.toHexString(),
+            timestamp: Date.now(),
+        });
+
+        await this.entityService.update(createdResultId, {
+            $push: {
+                eventIds: createdEventId.toHexString(),
+            },
+        });
+
         const result = await this.entityService.getOne({
             _id: createdResultId,
         });
@@ -244,7 +251,7 @@ export default class TestsController {
         await this.entityService.update(resultId, {
             $push: {
                 eventIds: {
-                    $each: Object.values(createdEventsIds),
+                    $each: (Object.values(createdEventsIds) as ObjectId[]).map((id) => id.toHexString()),
                 },
             },
         });
@@ -267,12 +274,12 @@ export default class TestsController {
 
         const createdAnswerId = await this.entityService.create({
             ...body.answer,
-            eventIds: Object.values(createdEventIds),
+            eventIds: Object.values(createdEventIds).map((id) => id.toHexString()),
         });
 
         await this.entityService.update(resultId, {
             $push: {
-                answerIds: createdAnswerId,
+                answerIds: createdAnswerId.toHexString(),
             },
         });
 

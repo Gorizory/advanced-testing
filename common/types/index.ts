@@ -73,6 +73,7 @@ export interface IAnswer extends IBaseEntity {
 
 export interface IEvent extends IBaseEntity {
     eventType: EventTypes;
+    resultId: string;
     timestamp: number;
     value?: any;
 }

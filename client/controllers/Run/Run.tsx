@@ -87,11 +87,13 @@ class RunController extends BaseController<IProps, IState> {
         window.onfocus = () => this.globalEvents.push({
             type: EntityTypes.GlobalEvent,
             eventType: EventTypes.FocusIn,
+            resultId: createdResult._id,
             timestamp: Date.now(),
         });
         window.onblur = () => this.globalEvents.push({
             type: EntityTypes.GlobalEvent,
             eventType: EventTypes.FocusOut,
+            resultId: createdResult._id,
             timestamp: Date.now(),
         });
     }
@@ -189,6 +191,7 @@ class RunController extends BaseController<IProps, IState> {
             {
                 type: EntityTypes.GlobalEvent,
                 eventType: EventTypes.TestStart,
+                resultId,
                 timestamp: Date.now(),
             },
         ]));
@@ -230,6 +233,7 @@ class RunController extends BaseController<IProps, IState> {
                     {
                         type: EntityTypes.GlobalEvent,
                         eventType: nextTaskIndex > taskIndex ? EventTypes.NextTask : EventTypes.PreviousTask,
+                        resultId,
                         timestamp: Date.now(),
                     },
                 ]),
@@ -271,6 +275,7 @@ class RunController extends BaseController<IProps, IState> {
                     {
                         type: EntityTypes.GlobalEvent,
                         eventType: EventTypes.TestFinish,
+                        resultId,
                         timestamp: Date.now(),
                     },
                 ]),
@@ -283,11 +288,13 @@ class RunController extends BaseController<IProps, IState> {
     addTaskEvent(eventType: EventTypes, value: string | number) {
         const {
             taskIndex,
+            resultId,
         } = this.state;
 
         this.taskEvents[taskIndex].push({
             type: EntityTypes.TaskEvent,
             eventType,
+            resultId,
             timestamp: Date.now(),
             value,
         });
@@ -296,11 +303,13 @@ class RunController extends BaseController<IProps, IState> {
     private addMouseEvent(eventType: EventTypes, event: React.MouseEvent<HTMLDivElement>) {
         const {
             taskIndex,
+            resultId,
         } = this.state;
 
         this.taskEvents[taskIndex].push({
             type: EntityTypes.TaskEvent,
             eventType,
+            resultId,
             timestamp: Date.now(),
             value: {
                 x: event.screenX,
@@ -310,9 +319,14 @@ class RunController extends BaseController<IProps, IState> {
     }
 
     private onResize() {
+        const {
+            resultId,
+        } = this.state;
+
         this.globalEvents.push({
             type: EntityTypes.GlobalEvent,
             eventType: EventTypes.Resize,
+            resultId,
             timestamp: Date.now(),
         });
         this.checkWindowSize();
@@ -326,9 +340,14 @@ class RunController extends BaseController<IProps, IState> {
             )
             && this.globalEvents.every(({eventType}) => eventType !== EventTypes.ConsoleOpened)
         ) {
+            const {
+                resultId,
+            } = this.state;
+
             this.globalEvents.push({
                 type: EntityTypes.GlobalEvent,
                 eventType: EventTypes.ConsoleOpened,
+                resultId,
                 timestamp: Date.now(),
             });
         }
