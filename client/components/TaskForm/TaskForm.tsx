@@ -387,12 +387,27 @@ export default class TaskForm extends PureComponent<IProps, IState> {
             return array;
         });
 
-        const updatedCorrectAnswers = currentCorrectAnswers.map((i) => i === index
-            ? up
-                ? index - 1
-                : index + 1
-            : i
-        );
+        const updatedCorrectAnswers = currentCorrectAnswers.map((i) => {
+            switch (i) {
+                case (index - 1):
+                    return up
+                        ? i + 1
+                        : i;
+
+                case (index):
+                    return up
+                        ? i - 1
+                        : i + 1;
+
+                case (index + 1):
+                    return up
+                        ? i
+                        : i - 1;
+
+                default:
+                    return i;
+            }
+        });
 
         this.setState({
             currentAnswers: updatedAnswers,
