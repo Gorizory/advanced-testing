@@ -62,6 +62,8 @@ export interface IResult extends IBaseEntity {
     testId: string;
     answerIds: string[];
     eventIds?: string[];
+    points?: number;
+    maxPoints?: number;
 }
 
 export interface IAnswer extends IBaseEntity {
@@ -69,6 +71,7 @@ export interface IAnswer extends IBaseEntity {
     answers: number[];
     time: number;
     eventIds?: string[];
+    points?: number;
 }
 
 export interface IEvent extends IBaseEntity {

@@ -256,32 +256,29 @@ class RunController extends BaseController<IProps, IState> {
 
         this.setState({
             finished: true,
-        }, () => {
-            Promise.all([
-                _.intersection(this.taskEvents[taskIndex].map(({eventType}) => eventType), [
-                    EventTypes.RadioChecked,
-                    EventTypes.CheckboxChecked,
-                    EventTypes.CheckboxUnchecked,
-                ]).length
-                    ? this.props.addAnswer(resultId, {
-                        type: EntityTypes.Answer,
-                        taskId: tasks[taskIndex]._id,
-                        answers,
-                        time: taskTime,
-                    }, this.taskEvents[taskIndex])
-                    : Promise.resolve(),
-                this.props.addResultEvents(resultId, [
-                    ...this.globalEvents,
-                    {
-                        type: EntityTypes.GlobalEvent,
-                        eventType: EventTypes.TestFinish,
-                        resultId,
-                        timestamp: Date.now(),
-                    },
-                ]),
-            ]);
+        }, async () => {
+            if (_.intersection(this.taskEvents[taskIndex].map(({eventType}) => eventType), [
+                EventTypes.RadioChecked,
+                EventTypes.CheckboxChecked,
+                EventTypes.CheckboxUnchecked,
+            ]).length) {
+                await this.props.addAnswer(resultId, {
+                    type: EntityTypes.Answer,
+                    taskId: tasks[taskIndex]._id,
+                    answers,
+                    time: taskTime,
+                }, this.taskEvents[taskIndex]);
+            }
 
-            this.taskEvents[taskIndex] = [];
+            this.props.addResultEvents(resultId, [
+                ...this.globalEvents,
+                {
+                    type: EntityTypes.GlobalEvent,
+                    eventType: EventTypes.TestFinish,
+                    resultId,
+                    timestamp: Date.now(),
+                },
+            ]);
         });
     }
 

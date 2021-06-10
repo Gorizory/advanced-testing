@@ -3,7 +3,7 @@ import {
     EventTypes,
 
     IAnswer,
-    IEvent,
+    IEvent, IResult,
     ITask,
     ITest,
 } from 'common/types';
@@ -130,7 +130,7 @@ export default class TestsController {
     ) {
         const task = {
             ...body,
-            points: this.pointsService.calculateMaxTaskPoint(body),
+            points: this.pointsService.calculateMaxTaskPoints(body),
         };
         const createdTaskId = await this.entityService.create(task);
         await this.entityService.update(testId, {
@@ -162,7 +162,7 @@ export default class TestsController {
         await this.entityService.update(taskId, {
             $set: {
                 ...body,
-                points: this.pointsService.calculateMaxTaskPoint(body),
+                points: this.pointsService.calculateMaxTaskPoints(body),
             },
         });
         const task = await this.entityService.getOne({
@@ -259,6 +259,65 @@ export default class TestsController {
         response
             .status(HttpStatus.OK)
             .send();
+
+        if (body.some(({eventType}) => eventType === EventTypes.TestFinish)) {
+            const result: IResult = await this.entityService.getOne({
+                _id: resultId,
+            });
+
+            const {
+                taskIds,
+            }: ITest = await this.entityService.getOne({
+                _id: result.testId,
+            });
+
+            const tasks: ITask[] = await Promise.all(taskIds.map((_id: string) => this.entityService.getOne({
+                _id,
+            })));
+
+            const answers: IAnswer[] = await Promise.all(result.answerIds.map((_id: string) => this.entityService.getOne({
+                _id,
+            })));
+
+            const finalAnswers = answers.reduceRight<IAnswer[]>((acc, answer) => {
+                const {
+                    taskId,
+                } = answer;
+
+                if (acc.some((finalAnswer) => finalAnswer.taskId === taskId)) {
+                    return acc;
+                }
+
+                acc.push(answer);
+                return acc;
+            }, []);
+
+            const answersPointsMap = finalAnswers.reduce<Record<string, number>>((map, answer) => {
+                const task = tasks.find(({_id}) => _id.toString() === answer.taskId);
+
+                map[answer._id.toString()] = task.points * this.pointsService.calculateAnswerPointsModifier(answer, task);
+                return map;
+            }, {});
+
+            let totalPoints = 0;
+            Object.entries(answersPointsMap).forEach(([answerId, points]) => {
+                totalPoints += points;
+                this.entityService.update(answerId, {
+                    $set: {
+                        points,
+                    },
+                });
+            });
+
+            const maxPoints = tasks.reduce((points, task) => points + task.points, 0);
+
+            this.entityService.update(resultId, {
+                $set: {
+                    maxPoints,
+                    points: totalPoints,
+                },
+            });
+        }
     }
 
     @Post('answer/:resultId')
