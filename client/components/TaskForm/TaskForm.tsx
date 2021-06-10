@@ -55,6 +55,7 @@ export default class TaskForm extends PureComponent<IProps, IState> {
         this.onChangeAnswer = this.onChangeAnswer.bind(this);
         this.onChangeAnswerGroup = this.onChangeAnswerGroup.bind(this);
         this.onChangeCorrectAnswer = this.onChangeCorrectAnswer.bind(this);
+        this.onChangeAnswersOrder = this.onChangeAnswersOrder.bind(this);
         this.onAddAnswer = this.onAddAnswer.bind(this);
         this.onRemoveAnswer = this.onRemoveAnswer.bind(this);
         this.onEdit = this.onEdit.bind(this);
@@ -166,6 +167,20 @@ export default class TaskForm extends PureComponent<IProps, IState> {
                     </div>
                 </div>
                 {currentAnswers.map((answer, index) => {
+                    const arrowUpProps = {
+                        className: b('arrow', {
+                            up: true,
+                        }),
+                        onClick: () => this.onChangeAnswersOrder(index),
+                    };
+
+                    const arrowDownProps = {
+                        className: b('arrow', {
+                            down: true,
+                        }),
+                        onClick: () => this.onChangeAnswersOrder(index, false),
+                    };
+
                     const correctAnswerProps = {
                         type: currentMultipleCorrectAnswers ? 'checkbox' : 'radio',
                         checked: currentCorrectAnswers.includes(index),
@@ -197,6 +212,10 @@ export default class TaskForm extends PureComponent<IProps, IState> {
                             key={index}
                             className={b('answer')}
                         >
+                            <div className={b('arrows')}>
+                                <div {...arrowUpProps}/>
+                                <div {...arrowDownProps}/>
+                            </div>
                             <input {...correctAnswerProps}/>
                             <div className={b('answer')}>
                                 <input {...answerInputProps}/>
@@ -336,6 +355,50 @@ export default class TaskForm extends PureComponent<IProps, IState> {
                 ],
             });
         }
+    }
+
+    private onChangeAnswersOrder(index: number, up = true) {
+        const {
+            currentAnswers,
+            currentAnswersGroups,
+            currentCorrectAnswers,
+        } = this.state;
+
+        if (up && index === 0) {
+            return;
+        }
+        if (!up && index === currentAnswers.length - 1) {
+            return;
+        }
+
+        const [
+            updatedAnswers,
+            updatedAnswersGroups,
+        ] = [
+            currentAnswers,
+            currentAnswersGroups,
+        ].map((array) => {
+            const element = array.splice(index, 1);
+            const newIndex = up
+                ? index - 1
+                : index + 1;
+            array.splice(newIndex, 0, element[0]);
+
+            return array;
+        });
+
+        const updatedCorrectAnswers = currentCorrectAnswers.map((i) => i === index
+            ? up
+                ? index - 1
+                : index + 1
+            : i
+        );
+
+        this.setState({
+            currentAnswers: updatedAnswers,
+            currentAnswersGroups: updatedAnswersGroups as AnswersGroups[],
+            currentCorrectAnswers: updatedCorrectAnswers,
+        });
     }
 
     private onAddAnswer() {
