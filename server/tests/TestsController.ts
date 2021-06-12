@@ -193,7 +193,7 @@ export default class TestsController {
 
         await this.entityService.update(test._id, {
             $pullAll: {
-                taskIds: [new ObjectId(taskId)],
+                taskIds: [taskId],
             },
         });
         const updatedTest = await this.entityService.getOne({
