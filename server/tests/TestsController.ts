@@ -3,7 +3,8 @@ import {
     EventTypes,
 
     IAnswer,
-    IEvent, IResult,
+    IEvent,
+    IResult,
     ITask,
     ITest,
 } from 'common/types';
@@ -216,6 +217,7 @@ export default class TestsController {
             testId,
             answerIds: [],
             eventIds: [],
+            isFinished: false,
         });
         const createdEventId = await this.entityService.create({
             type: EntityTypes.GlobalEvent,
@@ -261,6 +263,11 @@ export default class TestsController {
             .send();
 
         if (body.some(({eventType}) => eventType === EventTypes.TestFinish)) {
+            await this.entityService.update(resultId, {
+                $set: {
+                    isFinished: true,
+                },
+            });
             const result: IResult = await this.entityService.getOne({
                 _id: resultId,
             });

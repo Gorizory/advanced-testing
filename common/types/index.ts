@@ -64,6 +64,7 @@ export interface IResult extends IBaseEntity {
     eventIds?: string[];
     points?: number;
     maxPoints?: number;
+    isFinished: boolean;
 }
 
 export interface IAnswer extends IBaseEntity {
