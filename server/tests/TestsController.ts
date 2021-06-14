@@ -29,6 +29,9 @@ import {
     ObjectId,
 } from 'mongodb';
 import shortid from 'shortid';
+import {
+    round,
+} from 'common/libs/math';
 
 import EntityService from 'server/common/services/EntityService';
 import PointsService from 'server/common/services/PointsService';
@@ -302,7 +305,7 @@ export default class TestsController {
             const answersPointsMap = finalAnswers.reduce<Record<string, number>>((map, answer) => {
                 const task = tasks.find(({_id}) => _id.toString() === answer.taskId);
 
-                map[answer._id.toString()] = task.points * this.pointsService.calculateAnswerPointsModifier(answer, task);
+                map[answer._id.toString()] = round(task.points * this.pointsService.calculateAnswerPointsModifier(answer, task));
                 return map;
             }, {});
 

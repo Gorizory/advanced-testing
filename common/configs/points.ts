@@ -4,8 +4,8 @@ import {
 
 // Base points
 export const baseTaskPoints = {
-    singleOption: 10,
-    multiOption: 15,
+    singleOption: 1,
+    multiOption: 1.5,
 };
 
 // Task max points modifiers
