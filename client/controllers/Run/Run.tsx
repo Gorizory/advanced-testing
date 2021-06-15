@@ -303,6 +303,8 @@ class RunController extends BaseController<IProps, IState> {
             resultId,
         } = this.state;
 
+        const id = (event.target as Element).id || undefined;
+
         this.taskEvents[taskIndex].push({
             type: EntityTypes.TaskEvent,
             eventType,
@@ -311,6 +313,7 @@ class RunController extends BaseController<IProps, IState> {
             value: {
                 x: event.screenX,
                 y: event.screenY,
+                ...(id ? {id} : {}),
             },
         });
     }

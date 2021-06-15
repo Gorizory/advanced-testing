@@ -94,7 +94,10 @@ export default class Task extends PureComponent<IProps, IState> {
                     </div>
                 </div>
                 {answers.map((answer, index) => {
+                    const id = index.toString();
+
                     const correctAnswerProps = {
+                        id,
                         type: multipleCorrectAnswers ? 'checkbox' : 'radio',
                         checked: currentAnswers.includes(index),
                         onChange: () => this.onChangeAnswer(index),
@@ -103,10 +106,11 @@ export default class Task extends PureComponent<IProps, IState> {
                     return (
                         <div
                             key={index}
+                            id={id}
                             className={b('answer')}
                         >
                             <input {...correctAnswerProps}/>
-                            <div>
+                            <div id={id}>
                                 {answer}
                             </div>
                         </div>
