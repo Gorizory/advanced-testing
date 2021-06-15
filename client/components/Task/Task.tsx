@@ -72,15 +72,18 @@ export default class Task extends PureComponent<IProps, IState> {
         } = task;
 
         const prevTaskButtonProps = {
+            id: 'prev',
             children: 'Предыдущий вопрос',
             onClick: () => onPrevTask(currentAnswers),
         };
         const nextTaskButtonProps = {
+            id: 'next',
             children: 'Следующий вопрос',
             disabled: !currentAnswers.length,
             onClick: () => onNextTask(currentAnswers),
         };
         const finishButtonProps = {
+            id: 'finish',
             children: 'Закончить тест',
             disabled: !currentAnswers.length,
             onClick: () => onFinishTest(currentAnswers),
@@ -88,8 +91,14 @@ export default class Task extends PureComponent<IProps, IState> {
 
         return (
             <div className={b()}>
-                <div className={b('header')}>
-                    <div className={b('question')}>
+                <div
+                    className={b('header')}
+                    id={'task'}
+                >
+                    <div
+                        className={b('question')}
+                        id={'task'}
+                    >
                         {question}
                     </div>
                 </div>

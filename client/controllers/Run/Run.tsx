@@ -303,7 +303,7 @@ class RunController extends BaseController<IProps, IState> {
             resultId,
         } = this.state;
 
-        const id = (event.target as Element).id || undefined;
+        const id = (event.target as Element).id;
 
         this.taskEvents[taskIndex].push({
             type: EntityTypes.TaskEvent,
