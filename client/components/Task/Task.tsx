@@ -102,29 +102,31 @@ export default class Task extends PureComponent<IProps, IState> {
                         {question}
                     </div>
                 </div>
-                {answers.map((answer, index) => {
-                    const id = index.toString();
+                <div>
+                    {answers.map((answer, index) => {
+                        const id = index.toString();
 
-                    const correctAnswerProps = {
-                        id,
-                        type: multipleCorrectAnswers ? 'checkbox' : 'radio',
-                        checked: currentAnswers.includes(index),
-                        onChange: () => this.onChangeAnswer(index),
-                    };
+                        const correctAnswerProps = {
+                            id,
+                            type: multipleCorrectAnswers ? 'checkbox' : 'radio',
+                            checked: currentAnswers.includes(index),
+                            onChange: () => this.onChangeAnswer(index),
+                        };
 
-                    return (
-                        <div
-                            key={index}
-                            id={id}
-                            className={b('answer')}
-                        >
-                            <input {...correctAnswerProps}/>
-                            <div id={id}>
-                                {answer}
+                        return (
+                            <div
+                                key={index}
+                                id={id}
+                                className={b('answer')}
+                            >
+                                <input {...correctAnswerProps}/>
+                                <div id={id}>
+                                    {answer}
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
                 <div
                     className={b('footer', {
                         'right-aligned': firstTask,
