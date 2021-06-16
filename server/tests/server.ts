@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser';
 import {
     NestFactory,
 } from '@nestjs/core';
@@ -11,6 +12,8 @@ const bootstrap = async () => {
     const app = await NestFactory.create<NestExpressApplication>(
         TestsModule,
     );
+
+    app.use(bodyParser.json({limit: '50mb'}));
 
     await app.listen(3002);
 };
